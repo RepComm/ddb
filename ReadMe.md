@@ -1,18 +1,44 @@
-# ts-esm-babel-template
-Because I don't want to look up the preset-env arguments<br/>
-and guess for two hours until getting it right, again.
+# ddb
+An attempt at a realtime, decentralized, key:value, pub:sub database intended for mesh networking
 
-## Function
-This repo is set up to use babel 7^<br/>
-to compile typescript to javascript esmodules<br/>
+No dependencies, web and nodejs compatible.
 
-Simply run:
-`npm run build` or `./build.sh`
+Not ready for production environments, not even close.
 
-File copy is set up as well.
+## Implemented
+- Provider base class
+- LocalStorageProvider
+- WebSocketProvider - partial, untested
+- ddb.setItem
+- ddb.getItem
+- ddb.onItem
 
-`src/index.ts` -> `lib/index.js`<br/>
-`src/index.html` -> `lib/index.html`
+## Example
+```ts
+//for data on localStorage
+ddb.link({
+  provider: new LocalStorageProvider()
+});
 
-If you feel this template could be made better,<br/>
-submit a PR and I'll merge if its pretty + works :)
+//for remote data in a browser over ws
+ddb.link({
+  provider: new WebSocketProvider("ws://localhost:32423")
+});
+
+//try to get the value for key "name" once
+ddb.getItem("name").then((value)=>{
+  console.log("got value of 'name'", value);
+});
+
+//listen to changes of the value of key "name" continuously
+ddb.onItem("name", (value)=>{
+  console.log("'name' changed to", value);
+});
+
+```
+
+## Descriptions
+- Provider : A base-class for all providers to extend
+  - All providers are looped over to find data that local code asks for
+  - The providers are sorted by their 'quick average' response time
+  - Local storage based providers should always appear first in the providers list
