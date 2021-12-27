@@ -89,3 +89,8 @@ export class Provider {
 
   }
 }
+
+export interface ProviderConfig {
+  name: string;
+  enabled: boolean;
+}

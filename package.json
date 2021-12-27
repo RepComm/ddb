@@ -1,24 +1,32 @@
 {
-  "name": "ts-esm-babel-template",
+  "name": "@repcomm/ddb",
   "version": "1.0.0",
-  "description": "Babel template for compiling ts to esm",
-  "main": "index.js",
+  "description": "Realtime, decentralized, key:value, pub:sub database for mesh networking",
+  "main": "./docs/mod.js",
+  "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RepComm/ts-esm-babel-template.git"
+    "url": "git+https://github.com/RepComm/ddb.git"
   },
   "keywords": [
     "typescript",
     "esmodules",
     "babel",
-    "template"
+    "decentralized",
+    "database",
+    "realtime",
+    "key",
+    "value",
+    "pub",
+    "sub",
+    "mesh"
   ],
   "author": "Jonathan Crowder",
   "license": "Unlicense",
   "bugs": {
-    "url": "https://github.com/RepComm/ts-esm-babel-template/issues"
+    "url": "https://github.com/RepComm/ddb/issues"
   },
-  "homepage": "https://github.com/RepComm/ts-esm-babel-template#readme",
+  "homepage": "https://github.com/RepComm/ddb#readme",
   "devDependencies": {
     "@babel/cli": "^7.13.16",
     "@babel/core": "^7.14.0",
@@ -27,6 +35,6 @@
     "@repcomm/exponent-ts": "^1.1.9"
   },
   "scripts": {
-    "build": "babel src --extensions .ts --copy-files -d ."
+    "build": "babel src --extensions .ts --copy-files -d ./docs"
   }
 }

@@ -1,4 +1,4 @@
-import { EXPONENT_CSS_BODY_STYLES, EXPONENT_CSS_STYLES, Input, Panel } from "./node_modules/@repcomm/exponent-ts/docs/mod.js";
+import { EXPONENT_CSS_BODY_STYLES, EXPONENT_CSS_STYLES, Input, Panel } from "../node_modules/@repcomm/exponent-ts/docs/mod.js";
 import { ddb } from "./mod.js";
 import { LocalStorageProvider } from "./providers/localstorage.js";
 EXPONENT_CSS_BODY_STYLES.mount(document.head);
@@ -11,7 +11,7 @@ async function main() {
   });
   ddb.on("connect", evt => {});
   ddb.getItem("name").then(value => {
-    console.log("got value of 'name", value);
+    console.log("got value of 'name'", value);
   });
   ddb.onItem("name", value => {
     console.log("change 'name'", value);

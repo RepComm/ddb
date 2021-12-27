@@ -42,3 +42,11 @@ ddb.onItem("name", (value)=>{
   - All providers are looped over to find data that local code asks for
   - The providers are sorted by their 'quick average' response time
   - Local storage based providers should always appear first in the providers list
+
+## Example Web
+See [index.html](./src/index.html) and [index.ts](./src/index.ts)
+
+### Localhost
+Use an http/s server in the same directory as src
+
+`npm install https-localhost -g` or `npm install serve` work well
