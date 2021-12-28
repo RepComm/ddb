@@ -1,5 +1,5 @@
 
-import type { Provider } from "./provider";
+import type { Provider } from "./provider.js";
 
 export type DDBEventType = "connect" | "disconnect" | "set" | "pub" | "sub" | "unsub";
 

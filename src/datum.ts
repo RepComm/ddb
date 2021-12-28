@@ -1,4 +1,5 @@
 
+import { Database } from "./database.js";
 import { EventDispatcher } from "./eventdispatcher.js";
 import { isUndefinedOrNull } from "./utils.js";
 
@@ -12,10 +13,11 @@ export interface DatumMap {
   [key: DataKey]: Datum;
 }
 
-export type DataEventType = "init"|"change";
+export type DataEventType = "init" | "change";
 
 export interface DataEvent {
-  
+  type: DataEventType;
+  datum: Datum;
 }
 
 export interface DataEventListener {
@@ -26,10 +28,15 @@ export class Datum extends EventDispatcher<DataEventType, DataEvent, DataEventLi
   uuid: UUID;
   value: DataValue;
   children: DatumMap;
+  db: Database;
 
-  constructor() {
+  constructor(db: Database) {
     super();
-
+    this.db = db;
+    this.db.fire("add", {
+      type: "add",
+      datum: this
+    });
   }
   hasChild(id: string): boolean {
     if (isUndefinedOrNull(id)) throw "Cannot check if hasChild: id provided was undefined or null!";
@@ -42,7 +49,7 @@ export class Datum extends EventDispatcher<DataEventType, DataEvent, DataEventLi
     return this.children[id];
   }
   addChild(id: string): Datum {
-    let result = new Datum();
+    let result = new Datum(this.db);
     if (isUndefinedOrNull(this.children)) this.children = {};
     this.children[id] = result;
     return result;
@@ -50,26 +57,11 @@ export class Datum extends EventDispatcher<DataEventType, DataEvent, DataEventLi
   set(v: DataValue): this {
     this.value = v;
 
-    if ( isUndefinedOrNull(v)) {
-      this.fire("init");
+    if (isUndefinedOrNull(v)) {
+      this.fire("init", { type: "init", datum: this });
     } else {
-      this.fire("change");
+      this.fire("change", { type: "change", datum: this });
     }
     return this;
   }
-}
-
-async function test () {
-  let d = new Datum()
-  
-  .on("init", ()=>{
-    console.log("init data to", d.value);
-  })
-
-  .on("change", ()=>{
-    console.log("change data to", d.value);
-  });
-
-  d.set("hello world");
-  d.set("hello world 2");
 }

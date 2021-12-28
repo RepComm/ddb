@@ -1,68 +1,65 @@
-
-import { Datum, DataKey, DataValue, DataEventType, DataEventListener } from "./datum.js";
-
-export type EmptyGetPolicy = "throw"|"create"|"error-prop";
-
 export class Query {
-
-  datum: Datum;
-  emptyGetPolicy: EmptyGetPolicy;
-  error: string;
-
-  published: boolean;
-
-  constructor (root: Datum) {
+  constructor(root) {
     this.reset(root);
     this.setEmptyGetPolicy("create");
   }
-  value (): Datum {
+
+  value() {
     return this.datum;
   }
-  setEmptyGetPolicy (p: EmptyGetPolicy): this {
+
+  setEmptyGetPolicy(p) {
     this.emptyGetPolicy = p;
     return this;
   }
-  get (...ids: DataKey[]): this {
+
+  get(...ids) {
     for (let id of ids) {
       if (this.datum.hasChild(id)) {
         this.datum = this.datum.getChild(id);
       } else {
         this.error = `couldn't get child ${id} of ${this.datum}`;
+
         if (this.emptyGetPolicy === "create") {
           let child = this.datum.addChild(id);
           this.datum = child;
           this.error = undefined;
         } else if (this.emptyGetPolicy === "throw") {
           throw this.error;
-        } else {
-
-        }
+        } else {}
       }
     }
+
     return this;
   }
-  on (type: DataEventType, cb: DataEventListener) {
+
+  on(type, cb) {
     this.datum.on(type, cb);
   }
-  off (type: DataEventType, cb: DataEventListener) {
+
+  off(type, cb) {
     this.datum.off(type, cb);
   }
-  reset (root: Datum): this {
+
+  reset(root) {
     this.datum = root;
     this.error = undefined;
     return this;
   }
-  set (value: DataValue): this {
+
+  set(value) {
     this.datum.set(value);
     return this;
   }
-  publish (): this {
+
+  publish() {
     this.published = true;
     return this;
   }
-  unpublish (): this {
+
+  unpublish() {
     this.published = false;
     return this;
   }
-}
 
+}

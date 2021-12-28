@@ -6,7 +6,7 @@ import {
   Panel
 } from "../node_modules/@repcomm/exponent-ts/docs/mod.js";
 
-import { Database, LocalStorageProvider, WebSocketProvider } from "./mod.js";
+import { Database } from "./mod.js";
 
 EXPONENT_CSS_BODY_STYLES.mount(document.head);
 EXPONENT_CSS_STYLES.mount(document.head);
@@ -18,17 +18,20 @@ async function main() {
 
   let ddb = new Database();
 
-  let pub = 3.14159.toString(16);
-  
-  ddb.get(pub).get("position").get("x").set("10");
+  const keyPair = await crypto.subtle.generateKey(
+    {
+      name: "RSA-OAEP",
+      modulusLength: 4096,
+      publicExponent: new Uint8Array([1, 0, 1]),
+      hash: "SHA-256"
+    },
+    true,
+    ["encrypt", "decrypt"]
+  );
+  const publicKey = await crypto.subtle.exportKey("jwk", keyPair.publicKey);
+  const privateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
 
-  ddb.get(pub).get("position").get("x").on("change", ()=>{
-    //
-  });
-
-  ddb.get(pub).get("position").publish();
-  
-  ddb[pub].position.x = 10;
+  console.log(publicKey, privateKey);
 
   const aInput = new Input()
     .mount(container)
@@ -36,8 +39,8 @@ async function main() {
       ddb.get("a-input").set(aInput.getValue());    
     });
   
-  ddb.get("a-input").on("change", ()=>{
-    
+  ddb.get("a-input").on("change", (evt)=>{
+    bInput.setValue(evt.datum.value as string);
   });
 
   const bInput = new Input()
