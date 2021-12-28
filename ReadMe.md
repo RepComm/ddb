@@ -1,52 +1,55 @@
 # ddb
-An attempt at a realtime, decentralized, key:value, pub:sub database intended for mesh networking
 
-No dependencies, web and nodejs compatible.
+NOTICE: Work in progress, not stable or usable
 
-Not ready for production environments, not even close.
+A decentralized database intended for mesh networking.
+
+- 0 dependencies
+- Targets ESM node.js, web, and deno environments
 
 ## Implemented
-- Provider base class
-- LocalStorageProvider
-- WebSocketProvider - partial, untested
-- ddb.setItem
-- ddb.getItem
-- ddb.onItem
+- Data creation, modification, events
+- Database, events
+- Query, events
+- EventDispatcher w/ type generics
 
 ## Example
 ```ts
-//for data on localStorage
-ddb.link({
-  provider: new LocalStorageProvider()
+//create a database
+let ddb = new Database();
+
+//assume unique public cryptography key as a string
+let publicKey = 3.14159.toString();
+
+//get data in a tree structure path
+ddb
+  .get("players")
+  .get(publicKey)
+  .get("position")
+  .get("x")
+  
+  //listen to changes of this data
+  .on("change", (evt) => {
+  console.log(evt.datum.value as string);
 });
 
-//for remote data in a browser over ws
-ddb.link({
-  provider: new WebSocketProvider("ws://localhost:32423")
-});
+//data gets set somewhere else in code (or over network)
+ddb
+  .get("players")
+  .get(publicKey)
+  .get("position")
+  .get("x")
 
-//try to get the value for key "name" once
-ddb.getItem("name").then((value)=>{
-  console.log("got value of 'name'", value);
-});
-
-//listen to changes of the value of key "name" continuously
-ddb.onItem("name", (value)=>{
-  console.log("'name' changed to", value);
-});
+  //set the data
+  .set( Math.floor( Math.random() * 512 ).toString() );
 
 ```
-
-## Descriptions
-- Provider : A base-class for all providers to extend
-  - All providers are looped over to find data that local code asks for
-  - The providers are sorted by their 'quick average' response time
-  - Local storage based providers should always appear first in the providers list
 
 ## Example Web
 See [index.html](./src/index.html) and [index.ts](./src/index.ts)
 
 ### Localhost
-Use an http/s server in the same directory as src
+Use an http/s server in the same directory as src (not build directory, as a node module is relatively imported for development testing)
 
 `npm install https-localhost -g` or `npm install serve` work well
+Note: https-localhost option requires `sudo` on linux due to network securety

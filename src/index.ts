@@ -16,7 +16,6 @@ async function main() {
     .setId("container")
     .mount(document.body);
 
-  let ddb = new Database();
 
   const keyPair = await crypto.subtle.generateKey(
     {
@@ -32,14 +31,15 @@ async function main() {
   const privateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
 
   console.log(publicKey, privateKey);
+  let ddb = new Database();
 
   const aInput = new Input()
     .mount(container)
     .on("keyup", (evt) => {
-      ddb.get("a-input").set(aInput.getValue());    
+      ddb.get("a-input").set(aInput.getValue());
     });
-  
-  ddb.get("a-input").on("change", (evt)=>{
+
+  ddb.get("a-input").on("change", (evt) => {
     bInput.setValue(evt.datum.value as string);
   });
 
