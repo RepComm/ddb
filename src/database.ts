@@ -23,12 +23,12 @@ export class Database extends EventDispatcher<DatabaseEventType, DatabaseEvent, 
   constructor () {
     super();
 
-    this.global = new Datum(this);
+    this.global = new Datum(this, null, "global");
 
     this.dataEventHandler = (evt: DataEvent) => {
       switch (evt.type) {
         case "change":
-          console.log("db detect data change", evt.datum);
+          console.log("[db]", evt.datum.networkId, "aka", evt.datum.key, "value is", evt.datum.value);
           break;
         case "init":
           break;

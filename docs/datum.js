@@ -1,13 +1,34 @@
 import { EventDispatcher } from "./eventdispatcher.js";
 import { isUndefinedOrNull } from "./utils.js";
+import { murmurhash3 } from "./murmur.js";
 export class Datum extends EventDispatcher {
-  constructor(db) {
+  constructor(db, parent, key) {
     super();
     this.db = db;
+    this.parent = parent;
+    this.key = key;
+    this.networkId = murmurhash3(this.fullKey, 0);
     this.db.fire("add", {
       type: "add",
       datum: this
     });
+  }
+  /**
+   * 
+   */
+
+
+  get fullKey() {
+    if (isUndefinedOrNull(this.cachedFullKey)) this.cachedFullKey = this.calcFullKey();
+    return this.cachedFullKey;
+  }
+
+  calcFullKey() {
+    if (isUndefinedOrNull(this.parent)) {
+      return this.key;
+    } else {
+      return this.parent.fullKey + this.key;
+    }
   }
 
   hasChild(id) {
@@ -20,7 +41,7 @@ export class Datum extends EventDispatcher {
   }
 
   addChild(id) {
-    let result = new Datum(this.db);
+    let result = new Datum(this.db, this, id);
     if (isUndefinedOrNull(this.children)) this.children = {};
     this.children[id] = result;
     return result;

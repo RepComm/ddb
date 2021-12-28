@@ -4,17 +4,21 @@ EXPONENT_CSS_BODY_STYLES.mount(document.head);
 EXPONENT_CSS_STYLES.mount(document.head);
 
 async function main() {
-  let container = new Panel().setId("container").mount(document.body);
+  let container = new Panel().setId("container").mount(document.body); // const keyPair = await crypto.subtle.generateKey(
+  //   {
+  //     name: "RSA-OAEP",
+  //     modulusLength: 4096,
+  //     publicExponent: new Uint8Array([1, 0, 1]),
+  //     hash: "SHA-256"
+  //   },
+  //   true,
+  //   ["encrypt", "decrypt"]
+  // );
+  // const publicKey = await crypto.subtle.exportKey("jwk", keyPair.publicKey);
+  // const privateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
+  // console.log(publicKey, privateKey);
+
   let ddb = new Database();
-  const keyPair = await crypto.subtle.generateKey({
-    name: "RSA-OAEP",
-    modulusLength: 4096,
-    publicExponent: new Uint8Array([1, 0, 1]),
-    hash: "SHA-256"
-  }, true, ["encrypt", "decrypt"]);
-  const publicKey = await crypto.subtle.exportKey("jwk", keyPair.publicKey);
-  const privateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
-  console.log(publicKey, privateKey);
   const aInput = new Input().mount(container).on("keyup", evt => {
     ddb.get("a-input").set(aInput.getValue());
   });

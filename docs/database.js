@@ -4,12 +4,12 @@ import { Query } from "./query.js";
 export class Database extends EventDispatcher {
   constructor() {
     super();
-    this.global = new Datum(this);
+    this.global = new Datum(this, null, "global");
 
     this.dataEventHandler = evt => {
       switch (evt.type) {
         case "change":
-          console.log("db detect data change", evt.datum);
+          console.log("[db]", evt.datum.networkId, "aka", evt.datum.key, "value is", evt.datum.value);
           break;
 
         case "init":

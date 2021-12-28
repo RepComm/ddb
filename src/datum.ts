@@ -2,8 +2,9 @@
 import { Database } from "./database.js";
 import { EventDispatcher } from "./eventdispatcher.js";
 import { isUndefinedOrNull } from "./utils.js";
+import { murmurhash3 } from "./murmur.js";
 
-export type UUID = string;
+export type NetworkId = number;
 
 export type DataKey = string;
 export type DataValue = string | Array<string>;
@@ -25,18 +26,41 @@ export interface DataEventListener {
 }
 
 export class Datum extends EventDispatcher<DataEventType, DataEvent, DataEventListener> {
-  uuid: UUID;
+  networkId: NetworkId;
   value: DataValue;
   children: DatumMap;
   db: Database;
+  parent: Datum;
+  key: DataKey;
+  cachedFullKey: string;
 
-  constructor(db: Database) {
+  constructor(db: Database, parent: Datum, key: string) {
     super();
+
     this.db = db;
+    this.parent = parent;
+    this.key = key;
+
+    this.networkId = murmurhash3(this.fullKey, 0);
+
     this.db.fire("add", {
       type: "add",
       datum: this
     });
+  }
+  /**
+   * 
+   */
+  get fullKey (): string {
+    if (isUndefinedOrNull(this.cachedFullKey)) this.cachedFullKey = this.calcFullKey();
+    return this.cachedFullKey;
+  }
+  private calcFullKey (): string {
+    if (isUndefinedOrNull( this.parent) ) {
+      return this.key;
+    } else {
+      return this.parent.fullKey + this.key;
+    }
   }
   hasChild(id: string): boolean {
     if (isUndefinedOrNull(id)) throw "Cannot check if hasChild: id provided was undefined or null!";
@@ -49,7 +73,7 @@ export class Datum extends EventDispatcher<DataEventType, DataEvent, DataEventLi
     return this.children[id];
   }
   addChild(id: string): Datum {
-    let result = new Datum(this.db);
+    let result = new Datum(this.db, this, id);
     if (isUndefinedOrNull(this.children)) this.children = {};
     this.children[id] = result;
     return result;
